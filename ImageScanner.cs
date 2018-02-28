@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
-using AForge.Imaging;
 using Patagames.Ocr;
 using Patagames.Ocr.Enums;
 using SharpDX;
@@ -123,22 +120,11 @@ namespace Starship.Imaging {
                 return api.GetTextFromImage(image);
             }
         }
-
-        public static List<TemplateMatch> Compare(System.Drawing.Image image1, System.Drawing.Image image2, float threshold = 1) {
-            var bmp1 = ChangePixelFormat(new Bitmap(image1), PixelFormat.Format24bppRgb);
-            var bmp2 = ChangePixelFormat(new Bitmap(image2), PixelFormat.Format24bppRgb);
-            var matching = new ExhaustiveTemplateMatching(threshold);
-            return matching.ProcessImage(bmp1, bmp2).ToList();
-        }
-
+        
         private static Bitmap SaveBitmapToFile(Bitmap image, string filepath, string name, string extension) {
             var savePath = string.Concat(filepath, "\\", Path.GetFileNameWithoutExtension(name), extension);
             image.Save(savePath, ImageFormat.Bmp);
             return image;
-        }
-
-        private static Bitmap ChangePixelFormat(Bitmap inputImage, PixelFormat newFormat) {
-            return inputImage.Clone(new Rectangle(0, 0, inputImage.Width, inputImage.Height), newFormat);
         }
     }
 }
