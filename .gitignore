@@ -1,11 +1,4 @@
-# =============== #
-# Unity generated #
-# =============== #
-Temp/
-topia_Data/
-game_Data/
-Assets/3rdParty/
-/Library/
+/Configurations
 
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
