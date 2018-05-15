@@ -2,11 +2,13 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using Patagames.Ocr;
-using Patagames.Ocr.Enums;
+using System.Text.RegularExpressions;
 using SharpDX;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
+using Starship.Imaging.Extensions;
+using Tesseract;
+using ImageFormat = System.Drawing.Imaging.ImageFormat;
 
 namespace Starship.Imaging {
     public static class ImageScanner {
@@ -115,12 +117,30 @@ namespace Starship.Imaging {
         }
 
         public static string ReadText(Bitmap image) {
-            using (var api = OcrApi.Create()) {
-                api.Init(Languages.English);
-                return api.GetTextFromImage(image);
+            var regex = new Regex("[^a-zA-Z0-9]");
+
+            using (var engine = new TesseractEngine(@"./tessdata", "eng", EngineMode.Default)) {
+                using (var img = Pix.LoadTiffFromMemory(image.ToBytes(ImageFormat.Tiff))) {
+                    using (var page = engine.Process(img)) {
+                        var text = page.GetText();
+                        if (string.IsNullOrWhiteSpace(text) == false) {
+                            text = regex.Replace(text, string.Empty); //remove non alpha numeric characters
+                            text = text.ToLowerInvariant().Replace('i', '1').Replace('o', '0'); //to fix wrong interpretation
+                            return text;
+                        }
+                    }
+                }
             }
+
+            /*using (var api = OcrApi.Create()) {
+                api.Init(Languages.English);
+                api.SetVariable("tessedit_char_whitelist", "0123456789");
+                return api.GetTextFromImage(image);
+            }*/
+
+            return string.Empty;
         }
-        
+
         private static Bitmap SaveBitmapToFile(Bitmap image, string filepath, string name, string extension) {
             var savePath = string.Concat(filepath, "\\", Path.GetFileNameWithoutExtension(name), extension);
             image.Save(savePath, ImageFormat.Bmp);
