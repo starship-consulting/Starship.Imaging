@@ -157,7 +157,7 @@ namespace Starship.Imaging.Wrappers {
         /// <returns>A fast bitmap locked struct that will unlock the underlying bitmap after disposal</returns>
         /// <exception cref="System.Exception">The locking operation in the underlying bitmap failed</exception>
         /// <exception cref="InvalidOperationException">The bitmap is already locked outside this fast bitmap</exception>
-        private FastBitmapLocker Lock(ImageLockMode lockMode) {
+        public FastBitmapLocker Lock(ImageLockMode lockMode) {
             var rect = new Rectangle(0, 0, _bitmap.Width, _bitmap.Height);
 
             return Lock(lockMode, rect);
@@ -733,6 +733,13 @@ namespace Starship.Imaging.Wrappers {
         public static FastBitmap FastLock(this Bitmap bitmap) {
             var fast = new FastBitmap(bitmap);
             fast.Lock();
+
+            return fast;
+        }
+
+        public static FastBitmap FastLock(this Bitmap bitmap, ImageLockMode mode) {
+            var fast = new FastBitmap(bitmap);
+            fast.Lock(mode);
 
             return fast;
         }

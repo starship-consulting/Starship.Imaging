@@ -22,14 +22,14 @@ namespace Starship.Imaging.Detection {
             using(var source = Source.ChangePixelFormat(PixelFormat.Format32bppRgb).FastLock()) {
                 using(var target = template.ChangePixelFormat(PixelFormat.Format32bppRgb).FastLock()) {
 
-                    Parallel.For(0, source.Width, (x) => {
-                        Parallel.For(0, source.Height, (y) => {
+                    Parallel.For(0, source.Height, y => {
+                        for (var x = 0; x < source.Width; x++) {
                             var match = IsMatch(x, y, source, target, pixelThreshold);
 
                             if(match) {
                                 results.Add(new TemplateMatch(new Rectangle(x, y, target.Width, target.Height), 1));
                             }
-                        });
+                        };
                     });
                 }
             }
